@@ -1,0 +1,19 @@
+{
+    "saved_state": "./trained_rbm.pytorch.last",
+    "steps": 2500,
+    "concurrent_states": 32,
+    "temperature": 2.27,
+    "initialize_with_training": true,
+    "save interval": 10,
+    "output_states": true,
+    "thermalisation": 10000,
+    "autocorrelation": 30,
+    "image_dir": "./images/",
+    "n_hid": 64,
+    "epochs": 1000,
+    "ising": {
+        "size": 8,
+        "train_data":"../state2.27.txt"
+    }
+
+}
