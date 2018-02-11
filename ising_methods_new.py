@@ -153,7 +153,7 @@ def sample_probability(probabilities, random):
 		binary sample of probabilities
 	"""
 	torchReLu = nn.ReLU()
-	return torchReLu(torch.sign(probabilities - random)).data
+	return torchReLu(torch.sign(probabilities - random))#.data
 
 
 def hidden_from_visible(visible, W, h_bias):
@@ -169,25 +169,25 @@ def hidden_from_visible(visible, W, h_bias):
         probability: Tensor containing probabilities P(H_i = 1| {V})
     """
 	probability = torch.sigmoid(F.linear(visible, W, h_bias))
-	random_field = torch.rand(probability.size())
+	random_field = torch.rand(probability.size()).type(dtype)
 	new_states = sample_probability(probability, random_field)
 	return new_states, probability
 
 
 def visible_from_hidden(hid, W, v_bias):
-    """Samples the hidden (latent) variables given the visible.
-    
-    Args:
-        hid: Tensor containing the states of the hidden nodes
-        W: Weights of the rbm.
-        v_bias: Biases of the visible nodes of the rbm.
+	"""Samples the hidden (latent) variables given the visible.
 
-    Returns:
-        new_states: Tensor containing binary (1 or 0) states of the visible variables
-        probability: Tensor containing probabilities P(V_i = 1| {H})
-    """
+	Args:
+		hid: Tensor containing the states of the hidden nodes
+		W: Weights of the rbm.
+		v_bias: Biases of the visible nodes of the rbm.
+
+	Returns:
+		new_states: Tensor containing binary (1 or 0) states of the visible variables
+		probability: Tensor containing probabilities P(V_i = 1| {H})
+	"""
 	probability = torch.sigmoid(F.linear(hid, W.t(), v_bias))
-	random_field = torch.rand(probability.size())
+	random_field = torch.rand(probability.size()).type(dtype)
 	new_states = sample_probability(probability, random_field)
 	return new_states, probability		
 

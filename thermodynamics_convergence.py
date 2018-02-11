@@ -5,7 +5,7 @@ import sys
 import json
 import torch
 
-def sample_and_save(temperature, saved_state, parameters, filename, epoch):
+def sample_and_save(temperature, saved_state, parameters, filename, epoch, dtype):
 	""" Appends the four observables for a given trained rbm to a file.
 	Args:
 		n_vis: number of visible nodes
@@ -19,7 +19,7 @@ def sample_and_save(temperature, saved_state, parameters, filename, epoch):
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=parameters['n_hid'])
 	rbm.load_state_dict(torch.load(saved_state))
 
-	states = ising_methods_new.sample_from_rbm(rbm, parameters)
+	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype)
 	
 	with open(filename, "a") as file:
 		myfile.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch,ising_methods_new.ising_observables(states, L, temperature)))
@@ -30,6 +30,12 @@ parser.add_argument('--json', dest='input_json', default='params.json', help='JS
 parse.add_argument('--input_path', dest='input_path', help='Path to trained rbms')
 parse.add_argument('--output_path', dest='output_path', help='Path to output data')
 parse.add_argument('--training_data', dest='training_data', help='Path to training data')
+parse.add_argument('--cuda', dest='cuda', type=bool)
+
+if args.cuda:
+	dtype = torch.cuda.FloatTensor
+else:
+	dtype = torch.FloatTensor
 
 args = parser.parse_args()
 
