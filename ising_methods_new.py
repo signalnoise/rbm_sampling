@@ -117,7 +117,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
 	else:
 		v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
 
-	v = nn.Variable(v)
+	v = torch.autograd.Variable(v)
 	# Run the gibbs chain for a certain number of steps to allow it to converge to the
 	# stationary distribution.
 	for _ in range(parameters['thermalisation']):
