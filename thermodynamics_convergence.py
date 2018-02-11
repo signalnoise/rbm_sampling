@@ -1,7 +1,9 @@
+import sys
+sys.path.append('../rbm-pytorch-refactor/')
 import rbm_pytorch
 import ising_methods_new
 import argparse
-import sys
+
 import json
 import torch
 
