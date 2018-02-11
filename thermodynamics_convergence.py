@@ -35,14 +35,13 @@ parse.add_argument('--training_data', dest='training_data', help='Path to traini
 parse.add_argument('--cuda', dest='cuda', type=bool)
 
 args = parse.parse_args()
-print(args.training_data)
 
 if args.cuda:
 	dtype = torch.cuda.FloatTensor
 else:
 	dtype = torch.FloatTensor
 
-with args.training_data as file:
+with open(args.training_data) as file:
 	temperature = float(file.readline())
 
 try:
