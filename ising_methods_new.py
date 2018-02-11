@@ -152,7 +152,7 @@ def sample_probability(probabilities, random):
 	Returns:
 		binary sample of probabilities
 	"""
-	torchReLu = nn.ReLU()
+	torchReLu = F.ReLU()
 	return torchReLu(torch.sign(probabilities - random)).data
 
 
