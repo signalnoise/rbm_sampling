@@ -26,8 +26,8 @@ def sample_and_save(temperature, saved_state, parameters, filename, epoch, dtype
 	with open(filename, "a") as file:
 		myfile.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch,ising_methods_new.ising_observables(states, L, temperature)))
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
+parse = argparse.ArgumentParser(description='Process some integers.')
+parse.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
 					type=str)
 parse.add_argument('--input_path', dest='input_path', help='Path to trained rbms')
 parse.add_argument('--output_path', dest='output_path', help='Path to output data')
@@ -39,7 +39,7 @@ if args.cuda:
 else:
 	dtype = torch.FloatTensor
 
-args = parser.parse_args()
+args = parse.parse_args()
 
 with args.training_data as file:
 	temperature = float(file.readline())
