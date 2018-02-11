@@ -70,11 +70,22 @@ def magnetisation(spin_state):
 	return torch.mean(spin_state, dim=1).abs_()
 
 def ising_observables(states, L, temperature):
-	"""Computes observables 
+	"""Computes observables given a full dataset for a certain temperature.
+	Args:
+		states: Tensor containing a full set of configurations in the (0,1) range
+		L: L: Ising lattice size in an L x L lattice
+		temperature: The temperature at which the observables should be computed.
+	Returns:
+		avg_magnetisation: The average scaled magnetisation for the data set.
+		susc: The susceptibility of the data set.
+		avg_energy: The average scaled energy for the data set.
+		heatc: The heat capacity of the data set.
 	"""
-	states = convert_to_spins(states)
-	mag_history = magnetisation(states).numpy()
-	energy_history = ising_energy(states, L).numpy()
+	spin_states = convert_to_spins(states)
+
+	# Convert the torch tensor to numpy to run the statistics
+	mag_history = magnetisation(spin_states).numpy()
+	energy_history = ising_energy(spin_states, L).numpy()
 
 
 	N_spins = L**2
@@ -85,8 +96,19 @@ def ising_observables(states, L, temperature):
 	return avg_magnetisation, susc, avg_energy, heatc
 
 def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
-
+	""" Draws samples from an rbm.
+	Args:
+		rbm: a trained instance of rbm_pytorch.rbm
+		parameters: Json parameters
+		dtype: cuda or cpu torch tensor.
+		v_in: seed for the gibbs chain.
+	Returns:
+		states: a tensor containing all samples of shape (n_samples, n_visible)
+	"""
+	
 	n_vis = parameters['ising']['size']**2
+
+	# Create a zeroed tensor 
 	states = torch.zeros(parameters['concurrent_states'],n_vis).type(dtype)
 
 	# Initialise the gibbs chain with zeros or some input
@@ -95,40 +117,57 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
 	else:
 		v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
 
+	# Run the gibbs chain for a certain number of steps to allow it to converge to the
+	# stationary distribution.
 	for _ in range(parameters['thermalisation']):
 
 		h, h_prob = hidden_from_visible(v, rbm.W.data, rbm.h_bias.data)
 		v, v_prob = visible_from_hidden(h, rbm.W.data, rbm.v_bias.data)
 
+	# Fill the empty tensor with the fil sample from the machine
 	states.add_(v)
 
+	# Draw a number of samples equal to the number steps
 	for s in range(parameters['steps']):
 
 		if (s % parameters['save interval'] == 0):
 
 			save_images(parameters['image_dir'], s, v, v_prob, parameters['ising']['size'])
 
+		# Run the gibbs chain for a given number of steps to reduce correlation between samples
 		for _ in range(parameters['autocorrelation']):
 			h, h_prob = hidden_from_visible(v, rbm.W.data, rbm.h_bias.data)
 			v, v_prob = visible_from_hidden(h, rbm.W.data, rbm.v_bias.data)
 
+		# Concatenate the samples
 		states = torch.cat((states,v), dim=0)
 
 	return states	
 
-def sample_probability(prob, random):
+def sample_probability(probabilities, random):
 	"""Get samples from a tensor of probabilities.
-
-		:param probs: tensor of probabilities
-		:param rand: tensor (of the same shape as probs) of random values
-		:return: binary sample of probabilities
+	Args:
+		probs: tensor of probabilities
+		rand: tensor (of the same shape as probs) of random values
+	Returns:
+		binary sample of probabilities
 	"""
 	torchReLu = nn.ReLU()
-	return torchReLu(torch.sign(prob - random)).data
+	return torchReLu(torch.sign(probabilities - random)).data
 
 
 def hidden_from_visible(visible, W, h_bias):
-	# Enable or disable neurons depending on probabilities
+	"""Samples the hidden (latent) variables given the visible.
+
+    Args:
+        visible: Tensor containing the states of the visible nodes
+        W: Weights of the rbm.
+        h_bias: Biases of the hidden nodes of the rbm.
+
+    Returns:
+        new_states: Tensor containing binary (1 or 0) states of the hidden variables
+        probability: Tensor containing probabilities P(H_i = 1| {V})
+    """
 	probability = torch.sigmoid(F.linear(visible, W, h_bias))
 	random_field = torch.rand(probability.size())
 	new_states = sample_probability(probability, random_field)
@@ -136,14 +175,32 @@ def hidden_from_visible(visible, W, h_bias):
 
 
 def visible_from_hidden(hid, W, v_bias):
-	# Enable or disable neurons depending on probabilities
+    """Samples the hidden (latent) variables given the visible.
+    
+    Args:
+        hid: Tensor containing the states of the hidden nodes
+        W: Weights of the rbm.
+        v_bias: Biases of the visible nodes of the rbm.
+
+    Returns:
+        new_states: Tensor containing binary (1 or 0) states of the visible variables
+        probability: Tensor containing probabilities P(V_i = 1| {H})
+    """
 	probability = torch.sigmoid(F.linear(hid, W.t(), v_bias))
 	random_field = torch.rand(probability.size())
 	new_states = sample_probability(probability, random_field)
 	return new_states, probability		
 
 def save_images(directory, step, v, v_prob, L, output_states=True):
-
+	""" Saves images of the generated states.
+	Args:
+		directory: Directory in which to save the images.
+		step: The current step in the gibbs chain.
+		v: Tensor containing states of visible nodes.
+		v_prob: Tensor containing probabilities P(V_i = 1| {H})
+		L: Ising lattice size in an L x L lattice.
+		output_states: Boolean determining whether to output states or probabilities.
+	"""
 	if output_states:
 		imgshow(directory + "dream" + str(step).zfill(6),
 				make_grid(v.view(-1, 1, L, L)))
@@ -152,6 +209,8 @@ def save_images(directory, step, v, v_prob, L, output_states=True):
 				make_grid(v_prob.view(-1, 1, L, L)))
 
 def imgshow(file_name, img):
+	""" Saves images.
+	"""
 	npimg = np.transpose(img.numpy(), (1, 2, 0))
 	f = "./%s.png" % file_name
 	Wmin = img.min
