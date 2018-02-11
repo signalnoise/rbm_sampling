@@ -169,7 +169,7 @@ def hidden_from_visible(visible, W, h_bias):
         probability: Tensor containing probabilities P(H_i = 1| {V})
     """
     dtype = visible.type()
-	probability = torch.sigmoid(F.linear(visible, W, h_bias))
+    probability = torch.sigmoid(F.linear(visible, W, h_bias))
 	random_field = torch.rand(probability.size()).type(dtype)
 	new_states = sample_probability(probability, random_field)
 	return new_states, probability
