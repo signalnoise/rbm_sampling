@@ -29,9 +29,12 @@ parser.add_argument('--json', dest='input_json', default='params.json', help='JS
 					type=str)
 parse.add_argument('--input_path', dest='input_path', help='Path to trained rbms')
 parse.add_argument('--output_path', dest='output_path', help='Path to output data')
-parse.add_argument('--training_data', dest=training_data, help='Path to training data')
+parse.add_argument('--training_data', dest='training_data', help='Path to training data')
 
 args = parser.parse_args()
+
+with args.training_data as file:
+	temperature = float(file.readline())
 
 try:
 	parameters = json.load(open(args.input_json))
@@ -47,5 +50,3 @@ for e in range(0, 10, parameters['epochs'] + 10):
 	saved_state = args.input_path + "/trained_rbm.pytorch." + e
 	filename = temperature + "_thermo_convergence.data"
 	sample_and_save(temperature, saved_state, parameters, filename, e)
-
-
