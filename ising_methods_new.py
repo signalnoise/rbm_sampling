@@ -121,8 +121,8 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
 	# stationary distribution.
 	for _ in range(parameters['thermalisation']):
 
-		h, h_prob = hidden_from_visible(v, rbm.W.data, rbm.h_bias.data)
-		v, v_prob = visible_from_hidden(h, rbm.W.data, rbm.v_bias.data)
+		h, h_prob = hidden_from_visible(v, rbm.W.data.type(dtype), rbm.h_bias.data.type(dtype))
+		v, v_prob = visible_from_hidden(h, rbm.W.data.type(dtype), rbm.v_bias.data.type(dtype))
 
 	# Fill the empty tensor with the fil sample from the machine
 	states.add_(v)
@@ -136,8 +136,8 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
 
 		# Run the gibbs chain for a given number of steps to reduce correlation between samples
 		for _ in range(parameters['autocorrelation']):
-			h, h_prob = hidden_from_visible(v, rbm.W.data, rbm.h_bias.data)
-			v, v_prob = visible_from_hidden(h, rbm.W.data, rbm.v_bias.data)
+			h, h_prob = hidden_from_visible(v, rbm.W.data.type(dtype), rbm.h_bias.data.type(dtype))
+			v, v_prob = visible_from_hidden(h, rbm.W.data.type(dtype), rbm.v_bias.data.type(dtype))
 
 		# Concatenate the samples
 		states = torch.cat((states,v), dim=0)
