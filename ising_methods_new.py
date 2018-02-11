@@ -160,16 +160,16 @@ def hidden_from_visible(visible, W, h_bias):
 	"""Samples the hidden (latent) variables given the visible.
 
     Args:
-        visible: Tensor containing the states of the visible nodes
-        W: Weights of the rbm.
-        h_bias: Biases of the hidden nodes of the rbm.
-
+		visible: Tensor containing the states of the visible nodes
+		W: Weights of the rbm.
+		h_bias: Biases of the hidden nodes of the rbm.
+	
     Returns:
-        new_states: Tensor containing binary (1 or 0) states of the hidden variables
-        probability: Tensor containing probabilities P(H_i = 1| {V})
-    """
-    dtype = visible.type()
-    probability = torch.sigmoid(F.linear(visible, W, h_bias))
+		new_states: Tensor containing binary (1 or 0) states of the hidden variables
+		probability: Tensor containing probabilities P(H_i = 1| {V})
+	"""
+	dtype = visible.type()
+	probability = torch.sigmoid(F.linear(visible, W, h_bias))
 	random_field = torch.rand(probability.size()).type(dtype)
 	new_states = sample_probability(probability, random_field)
 	return new_states, probability
@@ -182,7 +182,7 @@ def visible_from_hidden(hid, W, v_bias):
 		hid: Tensor containing the states of the hidden nodes
 		W: Weights of the rbm.
 		v_bias: Biases of the visible nodes of the rbm.
-
+	
 	Returns:
 		new_states: Tensor containing binary (1 or 0) states of the visible variables
 		probability: Tensor containing probabilities P(V_i = 1| {H})
