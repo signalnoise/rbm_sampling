@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch.nn as nn
 from torchvision.utils import make_grid, save_image
 import matplotlib.pyplot as plt
+import math
 
 def right(i, L):
 	"""Returns the index of the spin to the right of the spin at index i.
@@ -40,11 +41,10 @@ def ising_energy(spin_state, L):
 	dtype = spin_state.type()
 
 	# shape[0] is the number of concurrent states, shape[1] number of visible nodes
-	e = torch.FloatTensor(spin_state.shape[0]).type(dtype)
+	e = torch.zeros(spin_state.shape[0]).type(dtype)
 	
 	for i in range(spin_state.shape[1]):
-		e.add_(-torch.mul(spin_state[:,i],(torch.add(spin_state[:,right(i,L)],spin_state[:,below(i,L)]))))
-
+		e = torch.add(e,-torch.mul(spin_state[:,i],(torch.add(spin_state[:,right(i,L)],spin_state[:,below(i,L)]))))
 	return e
 
 def convert_to_spins(state):
@@ -89,10 +89,10 @@ def ising_observables(states, L, temperature):
 
 
 	N_spins = L**2
-	avg_magnetisation = np.mean(mag_history)
-	avg_energy = np.mean(energy_history)/N_spins
-	susc = np.var(mag_history*N_spins) / (N_spins * temperature)
-	heatc = np.var(energy_history) / (N_spins * temperature**2)
+	avg_magnetisation = np.mean(mag_history, dtype=np.float64)
+	avg_energy = np.mean(energy_history, dtype=np.float64)/N_spins
+	susc = np.var(mag_history*N_spins, dtype=np.float64) / (N_spins * temperature)
+	heatc = np.var(energy_history, dtype=np.float64) / (N_spins * temperature**2)
 	return avg_magnetisation, susc, avg_energy, heatc
 
 def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
@@ -121,8 +121,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
 	# stationary distribution.
 	for _ in range(parameters['thermalisation']):
 
-		h, h_prob = hidden_from_visible(v, rbm.W.data.type(dtype), rbm.h_bias.data.type(dtype))
-		v, v_prob = visible_from_hidden(h, rbm.W.data.type(dtype), rbm.v_bias.data.type(dtype))
+		v, v_prob = new_state(v, rbm, dtype)
 
 	# Fill the empty tensor with the fil sample from the machine
 	states.add_(v)
@@ -136,8 +135,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
 
 		# Run the gibbs chain for a given number of steps to reduce correlation between samples
 		for _ in range(parameters['autocorrelation']):
-			h, h_prob = hidden_from_visible(v, rbm.W.data.type(dtype), rbm.h_bias.data.type(dtype))
-			v, v_prob = visible_from_hidden(h, rbm.W.data.type(dtype), rbm.v_bias.data.type(dtype))
+			v, v_prob = new_state(v, rbm, dtype)
 
 		# Concatenate the samples
 		states = torch.cat((states,v), dim=0)
@@ -152,11 +150,11 @@ def sample_probability(probabilities, random):
 	Returns:
 		binary sample of probabilities
 	"""
-	#torchReLu = nn.ReLu()
+	#torchReLu = nn.ReLU()
 	return F.relu(torch.sign(probabilities - random)).data
 
 
-def hidden_from_visible(visible, W, h_bias):
+def hidden_from_visible(visible, W, h_bias, dtype):
 	"""Samples the hidden (latent) variables given the visible.
 
     Args:
@@ -168,14 +166,13 @@ def hidden_from_visible(visible, W, h_bias):
 		new_states: Tensor containing binary (1 or 0) states of the hidden variables
 		probability: Tensor containing probabilities P(H_i = 1| {V})
 	"""
-	dtype = torch.cuda.FloatTensor
 	probability = torch.sigmoid(F.linear(visible, W, h_bias))
 	random_field = torch.rand(probability.size()).type(dtype)
 	new_states = sample_probability(probability, random_field)
 	return new_states, probability
 
 
-def visible_from_hidden(hid, W, v_bias):
+def visible_from_hidden(hid, W, v_bias, dtype):
 	"""Samples the hidden (latent) variables given the visible.
 
 	Args:
@@ -187,11 +184,17 @@ def visible_from_hidden(hid, W, v_bias):
 		new_states: Tensor containing binary (1 or 0) states of the visible variables
 		probability: Tensor containing probabilities P(V_i = 1| {H})
 	"""
-	dtype = torch.cuda.FloatTensor
 	probability = torch.sigmoid(F.linear(hid, W.t(), v_bias))
-	random_field = torch.rand(probability.size())#.type(dtype)
+	random_field = torch.rand(probability.size()).type(dtype)
 	new_states = sample_probability(probability, random_field)
-	return new_states, probability		
+	return new_states, probability
+
+def new_state(v, rbm, dtype):
+	"""
+	"""	
+	h, h_prob = hidden_from_visible(v, rbm.W.data.type(dtype), rbm.h_bias.data.type(dtype), dtype)
+	v, v_prob = visible_from_hidden(h, rbm.W.data.type(dtype), rbm.v_bias.data.type(dtype), dtype)
+	return v, v_prob	
 
 def save_images(directory, step, v, v_prob, L, output_states=True):
 	""" Saves images of the generated states.
