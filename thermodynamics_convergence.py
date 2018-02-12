@@ -26,7 +26,7 @@ def sample_and_save(temperature, saved_state, parameters, filename, epoch, dtype
 	mag, susc, energy, heatc = ising_methods_new.ising_observables(states, L, temperature)
 
 	with open(filename, "a") as file:
-		file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, mag, susc, energy, heatc))
+		file.write("{:d}\t{:f}\t{:f}\t{:f}\t{:f}\n".format(epoch, mag, susc, energy, heatc))
 
 parse = argparse.ArgumentParser(description='Process some integers.')
 parse.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
@@ -55,7 +55,7 @@ except:
 	print("Unexpected error:", sys.exc_info()[0])
 	raise
 
-for e in range(0, 10, parameters['epochs'] + 10):
+for e in range(0, parameters['epochs'] + 10, 10):
 
 	saved_state = args.input_path + "/trained_rbm.pytorch." + str(e).zfill(4)
 	filename = str(temperature) + "_thermo_convergence.data"
