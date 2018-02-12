@@ -84,8 +84,8 @@ def ising_observables(states, L, temperature):
 	spin_states = convert_to_spins(states)
 
 	# Convert the torch tensor to numpy to run the statistics
-	mag_history = magnetisation(spin_states).numpy()
-	energy_history = ising_energy(spin_states, L).numpy()
+	mag_history = magnetisation(spin_states).cpu().numpy()
+	energy_history = ising_energy(spin_states, L).cpu().numpy()
 
 
 	N_spins = L**2
@@ -208,10 +208,10 @@ def save_images(directory, step, v, v_prob, L, output_states=True):
 	"""
 	if output_states:
 		imgshow(directory + "dream" + str(step).zfill(6),
-				make_grid(v.view(-1, 1, L, L)))
+				make_grid(v.cpu().view(-1, 1, L, L)))
 	else:
 		imgshow(directory + "dream" + str(step).zfill(6),
-				make_grid(v_prob.view(-1, 1, L, L)))
+				make_grid(v_prob.cpu().view(-1, 1, L, L)))
 
 def imgshow(file_name, img):
 	""" Saves images.
