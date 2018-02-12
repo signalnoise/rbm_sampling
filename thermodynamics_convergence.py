@@ -21,7 +21,7 @@ def sample_and_save(temperature, saved_state, parameters, filename, epoch, dtype
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=parameters['n_hid'])
 	rbm.load_state_dict(torch.load(saved_state))
 
-	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype, images=image_dir)
+	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype, image_dir=image_dir)
 	
 	mag, susc, energy, heatc = ising_methods_new.ising_observables(states, L, temperature)
 
@@ -61,4 +61,4 @@ for e in range(0, parameters['epochs'] + 10, 10):
 
 	saved_state = args.input_path + "/trained_rbm.pytorch." + str(e).zfill(4)
 	filename = args.output_path + str(temperature) + "_thermo_convergence.data"
-	sample_and_save(temperature, saved_state, parameters, filename, e, dtype)
+	sample_and_save(temperature, saved_state, parameters, filename, e, dtype, image_dir)
