@@ -58,5 +58,5 @@ except:
 for e in range(0, parameters['epochs'] + 10, 10):
 
 	saved_state = args.input_path + "/trained_rbm.pytorch." + str(e).zfill(4)
-	filename = str(temperature) + "_thermo_convergence.data"
+	filename = args.output_path+ str(temperature) + "_thermo_convergence.data"
 	sample_and_save(temperature, saved_state, parameters, filename, e, dtype)
