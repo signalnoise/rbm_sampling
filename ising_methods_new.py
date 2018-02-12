@@ -95,7 +95,7 @@ def ising_observables(states, L, temperature):
 	heatc = np.var(energy_history, dtype=np.float64) / (N_spins * temperature**2)
 	return avg_magnetisation, susc, avg_energy, heatc
 
-def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
+def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_dir):
 	""" Draws samples from an rbm.
 	Args:
 		rbm: a trained instance of rbm_pytorch.rbm
@@ -131,7 +131,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None):
 
 		if (s % parameters['save interval'] == 0):
 
-			save_images(parameters['image_dir'], s, v, v_prob, parameters['ising']['size'])
+			save_images(image_dir, s, v, v_prob, parameters['ising']['size'])
 
 		# Run the gibbs chain for a given number of steps to reduce correlation between samples
 		for _ in range(parameters['autocorrelation']):
