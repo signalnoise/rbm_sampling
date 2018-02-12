@@ -150,8 +150,8 @@ def sample_probability(probabilities, random):
 	Returns:
 		binary sample of probabilities
 	"""
-	#torchReLu = nn.ReLU()
-	return F.relu(torch.sign(probabilities - random)).data
+	torchReLu = nn.ReLU()
+	return torchReLu(torch.sign(probabilities - random)).data
 
 
 def hidden_from_visible(visible, W, h_bias, dtype):
