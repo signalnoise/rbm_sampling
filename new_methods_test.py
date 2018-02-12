@@ -1,7 +1,11 @@
+import sys
+try:
+	sys.path.append('../rbm-pytorch-refactor/')
+except IOError as e:
+	print('Oops')
 import rbm_pytorch
 import ising_methods_new
 import argparse
-import sys
 import json
 import torch
 
