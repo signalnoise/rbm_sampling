@@ -95,7 +95,7 @@ def ising_observables(states, L, temperature):
 	heatc = np.var(energy_history, dtype=np.float64) / (N_spins * temperature**2)
 	return avg_magnetisation, susc, avg_energy, heatc
 
-def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_dir):
+def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_dir="./images"):
 	""" Draws samples from an rbm.
 	Args:
 		rbm: a trained instance of rbm_pytorch.rbm

@@ -21,7 +21,7 @@ def sample_and_save(temperature, saved_state, parameters, filename, epoch, dtype
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=parameters['n_hid'])
 	rbm.load_state_dict(torch.load(saved_state))
 
-	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype, image_dir)
+	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype, images=image_dir)
 	
 	mag, susc, energy, heatc = ising_methods_new.ising_observables(states, L, temperature)
 
