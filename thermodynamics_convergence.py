@@ -23,8 +23,10 @@ def sample_and_save(temperature, saved_state, parameters, filename, epoch, dtype
 
 	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype)
 	
+	mag, susc, energy, heatc = ising_methods_new.ising_observables(states, L, temperature)
+
 	with open(filename, "a") as file:
-		file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch,ising_methods_new.ising_observables(states, L, temperature)))
+		file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, mag, susc, energy, heatc))
 
 parse = argparse.ArgumentParser(description='Process some integers.')
 parse.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
