@@ -1,8 +1,8 @@
 import sys
-try:
-	sys.path.append('../rbm-pytorch-refactor/')
-except IOError as e:
-	print('Oops')
+#try:
+#	sys.path.append('../rbm-pytorch-refactor/')
+#except IOError as e:
+#	print('Oops')
 import rbm_pytorch
 import ising_methods_new
 import argparse
@@ -29,5 +29,5 @@ rbm = rbm_pytorch.RBM(n_vis=parameters['ising']['size']**2, n_hid=parameters['n_
 rbm.load_state_dict(torch.load(parameters['saved_state']))
 
 states = ising_methods_new.sample_from_rbm(rbm, parameters)
-
-print(ising_methods_new.ising_observables(states, 8, 2.27))
+print('hello')
+print(ising_methods_new.ising_observables(states, parameters['ising']['size'], 2.27))

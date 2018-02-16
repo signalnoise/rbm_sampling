@@ -67,7 +67,7 @@ def magnetisation(spin_state):
 		Torch tensor containing the magnetisations of the states
 	"""
 	
-	return torch.mean(spin_state, dim=1).abs_()
+	return torch.mean(spin_state, dim=1).abs_()*spin_state.shape[1]
 
 def ising_observables(states, L, temperature):
 	"""Computes observables given a full dataset for a certain temperature.
@@ -82,20 +82,75 @@ def ising_observables(states, L, temperature):
 		heatc: The heat capacity of the data set.
 	"""
 	spin_states = convert_to_spins(states)
+	dtype = states.type()
 
 	# Convert the torch tensor to numpy to run the statistics
 	mag_history = magnetisation(spin_states).cpu().numpy()
 	energy_history = ising_energy(spin_states, L).cpu().numpy()
 
 
-	N_spins = L**2
-	avg_magnetisation = np.mean(mag_history, dtype=np.float64)
-	avg_energy = np.mean(energy_history, dtype=np.float64)/N_spins
-	susc = np.var(mag_history*N_spins, dtype=np.float64) / (N_spins * temperature)
-	heatc = np.var(energy_history, dtype=np.float64) / (N_spins * temperature**2)
-	return avg_magnetisation, susc, avg_energy, heatc
+	N_spins = spin_states.shape[1]
+	avg_magnetisation = average_magnetisation(mag_history, N_spins)
+	avg_energy = average_energy(energy_history, N_spins)
+	susc = susceptibility(mag_history, N_spins, temperature)
+	heatc = heat_capacity(energy_history, N_spins, temperature)
 
-def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_dir="./images"):
+	mag_err, susc_err, energy_err, heatc_err = ising_errors(mag_history, energy_history, N_spins, temperature, 100, dtype)
+	
+	mag_t = avg_magnetisation, mag_err
+	susc_t = susc, susc_err
+	energy_t = avg_energy, energy_err
+	heatc_t = heatc, heatc_err
+
+	return mag_t, susc_t, energy_t, heatc_t
+
+def average_magnetisation(mag_history, N_spins):
+	return np.mean(mag_history, dtype=np.float64)/N_spins
+
+def average_energy(energy_history, N_spins):
+	return  np.mean(energy_history, dtype=np.float64)/N_spins
+
+def susceptibility(mag_history, N_spins, temperature):
+	return np.var(mag_history, dtype=np.float64) / (N_spins * temperature)
+
+def heat_capacity(energy_history, N_spins, temperature):
+	return np.var(energy_history, dtype=np.float64) / (N_spins * temperature**2)
+
+def ising_errors(mag_history, energy_history, N_spins, temperature, N_bootstrap, dtype):
+	
+	mag_samples = torch.zeros(1,len(mag_history)).type(dtype)
+	energy_samples = torch.zeros(1,len(energy_history)).type(dtype)
+
+	mag_samples.add_(bootstrap_sample(mag_history))
+	energy_samples.add_(bootstrap_sample(energy_history))
+
+	for i in range(N_bootstrap):
+	
+		mag_samples = torch.cat((mag_samples, bootstrap_sample(mag_history)), dim=0)
+		energy_samples = torch.cat((energy_samples, bootstrap_sample(energy_history)), dim=0)
+
+	mag = torch.mean(mag_samples, dim=1)/N_spins
+	susc = torch.var(mag_samples, dim=1)/(N_spins * temperature)
+	energy = torch.mean(energy_samples, dim=1)/N_spins
+	heatc = torch.var(energy_samples, dim=1)/(N_spins * temperature**2)
+
+	mag_err = np.sqrt(N_bootstrap*torch.var(mag))
+	susc_err = np.sqrt(N_bootstrap*torch.var(susc))
+	energy_err = np.sqrt(N_bootstrap*torch.var(energy))
+	heatc_err = np.sqrt(N_bootstrap*torch.var(heatc))
+
+	return mag_err, susc_err, energy_err, heatc_err
+
+def bootstrap_sample(tensor):
+	dtype = tensor.type()
+	output = torch.zeros(1,tensor.size).dtype(dtype)
+	for i in range(tensor.size):
+		output[0,i] = output[0,i] + tensor[np.random.randint(tensor.size)]
+
+	return output
+
+
+def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_dir="./images", save_images=False):
 	""" Draws samples from an rbm.
 	Args:
 		rbm: a trained instance of rbm_pytorch.rbm
@@ -129,7 +184,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_d
 	# Draw a number of samples equal to the number steps
 	for s in range(parameters['steps']):
 
-		if (s % parameters['save interval'] == 0):
+		if (s % parameters['save interval'] == 0) and (save_images):
 
 			save_images(image_dir, s, v, v_prob, parameters['ising']['size'])
 
