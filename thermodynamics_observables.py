@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../rbm-pytorch-refactor/')
 import rbm_pytorch
+import rbm_interface
 import ising_methods_new
 import argparse
 from torch.utils.data import DataLoader
