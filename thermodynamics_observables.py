@@ -71,7 +71,7 @@ for i in range(1, 31, 1):
 	train_loader = DataLoader(rbm_interface.CSV_Ising_dataset(training_data, size=8), 
 							shuffle=True, batch_size=100000, drop_last=True)
 	for i, (data, target) in enumerate(train_loader):
-		mag, susc, energy, heatc = ising_methods_new.ising_observables(data, 8, temperature)
+		mag, susc, energy, heatc = ising_methods_new.ising_observables(data, parameters['ising']['size'], temperature)
 
 	with open(args.input_path + "training_data_observables.txt", "a") as file:
 		file.write("{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\n".format(temperature, 
