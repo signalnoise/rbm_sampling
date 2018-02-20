@@ -58,11 +58,11 @@ except:
 # Loop over epochs and append data to files
 for i in range(1, 31, 1):
 
-	input_dir = args.input_path + "/8-" + str(i) + "/" 
+	input_dir = args.input_path + "/8-" + i + "/" 
 
 	image_dir = input_dir + "/images/"
 
-	training_data = "/exports/csce/eddie/ph/groups/rbm_ml/owen-data/training_data/state" + str(i) + ".txt"
+	training_data = "/exports/csce/eddie/ph/groups/rbm_ml/owen-data/training_data/state" + i + ".txt"
 
 	with open() as file:
 		temperature = float(file.readline())

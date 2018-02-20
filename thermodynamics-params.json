@@ -1,7 +1,7 @@
 {
     "saved_state": "./trained_rbm.pytorch.last",
-    "steps": 2500,
-    "concurrent_states": 32,
+    "steps": 1249,
+    "concurrent_states": 64,
     "temperature": 2.27,
     "initialize_with_training": true,
     "save interval": 10,
