@@ -159,8 +159,8 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_d
 	if v_in is not None:
 		v = v_in
 	else:
-		# v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
-		v = F.relu(torch.sign(torch.rand(parameters['concurrent_states'], rbm.v_bias.data.shape[0])-0.5)).data
+		v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
+		#v = F.relu(torch.sign(torch.rand(parameters['concurrent_states'], rbm.v_bias.data.shape[0])-0.5)).data
 
 	# Run the gibbs chain for a certain number of steps to allow it to converge to the
 	# stationary distribution.
