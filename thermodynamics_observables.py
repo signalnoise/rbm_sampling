@@ -3,7 +3,7 @@ sys.path.append('../rbm-pytorch-refactor/')
 import rbm_pytorch
 import ising_methods_new
 import argparse
-
+from torch.utils.data import DataLoader
 import json
 import torch
 
