@@ -118,35 +118,24 @@ def heat_capacity(energy_history, N_spins, temperature):
 
 def ising_errors(mag_history, energy_history, N_spins, temperature, N_bootstrap, dtype):
 	
-	mag_samples = torch.zeros(1,len(mag_history)).type(dtype)
-	energy_samples = torch.zeros(1,len(energy_history)).type(dtype)
-
-	mag_samples.add_(bootstrap_sample(mag_history))
-	energy_samples.add_(bootstrap_sample(energy_history))
-
-	for i in range(N_bootstrap):
-	
-		mag_samples = torch.cat((mag_samples, bootstrap_sample(mag_history)), dim=0)
-		energy_samples = torch.cat((energy_samples, bootstrap_sample(energy_history)), dim=0)
+	mag_samples = bootstrap_sample(mag_history, N_bootstrap, dtype)
+	energy_samples = bootstrap_sample(energy_history, N_bootstrap, dtype)
 
 	mag = torch.mean(mag_samples, dim=1)/N_spins
 	susc = torch.var(mag_samples, dim=1)/(N_spins * temperature)
 	energy = torch.mean(energy_samples, dim=1)/N_spins
 	heatc = torch.var(energy_samples, dim=1)/(N_spins * temperature**2)
 
-	mag_err = np.sqrt(N_bootstrap*torch.var(mag))
-	susc_err = np.sqrt(N_bootstrap*torch.var(susc))
-	energy_err = np.sqrt(N_bootstrap*torch.var(energy))
-	heatc_err = np.sqrt(N_bootstrap*torch.var(heatc))
+	mag_err = np.sqrt(torch.var(mag))
+	susc_err = np.sqrt(torch.var(susc))
+	energy_err = np.sqrt(torch.var(energy))
+	heatc_err = np.sqrt(torch.var(heatc))
 
 	return mag_err, susc_err, energy_err, heatc_err
 
-def bootstrap_sample(tensor):
-	dtype = tensor.type()
-	output = torch.zeros(1,tensor.size).dtype(dtype)
-	for i in range(tensor.size):
-		output[0,i] = output[0,i] + tensor[np.random.randint(tensor.size)]
-
+def bootstrap_sample(nd_array, N_bootstrap, dtype):
+	indices = np.random.randint(len(nd_array), size = (N_bootstrap, len(nd_array)))
+	output = torch.from_numpy(np.take(nd_array,indices)).type(dtype)
 	return output
 
 
@@ -170,7 +159,8 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_d
 	if v_in is not None:
 		v = v_in
 	else:
-		v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
+		# v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
+		v = F.relu(torch.sign(torch.rand(parameters['concurrent_states'], rbm.v_bias.data.shape[0])-0.5)).data
 
 	# Run the gibbs chain for a certain number of steps to allow it to converge to the
 	# stationary distribution.

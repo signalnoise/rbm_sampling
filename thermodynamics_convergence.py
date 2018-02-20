@@ -45,8 +45,6 @@ if args.cuda:
 else:
 	dtype = torch.FloatTensor
 
-
-
 # Load json params
 try:
 	parameters = json.load(open(args.input_json))
@@ -60,7 +58,7 @@ except:
 # Loop over epochs and append data to files
 for i in range(1, 31, 1):
 
-	input_dir = args.input_path + "/" + i + "/" 
+	input_dir = args.input_path + "/8-" + i + "/" 
 
 	image_dir = input_dir + "/images/"
 
