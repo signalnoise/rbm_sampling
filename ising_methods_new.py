@@ -95,7 +95,7 @@ def ising_observables(states, L, temperature):
 	susc = susceptibility(mag_history, N_spins, temperature)
 	heatc = heat_capacity(energy_history, N_spins, temperature)
 
-	mag_err, susc_err, energy_err, heatc_err = ising_errors(mag_history, energy_history, N_spins, temperature, 100, dtype)
+	mag_err, susc_err, energy_err, heatc_err = ising_errors(mag_history, energy_history, N_spins, temperature, 3000, dtype)
 	
 	mag_t = avg_magnetisation, mag_err
 	susc_t = susc, susc_err
