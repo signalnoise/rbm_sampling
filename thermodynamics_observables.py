@@ -64,6 +64,15 @@ for i in range(1, 31, 1):
 
 	training_data = "/exports/csce/eddie/ph/groups/rbm_ml/owen-data/training_data/state" + str(i) + ".txt"
 
+	train_loader = DataLoader(rbm_interface.CSV_Ising_dataset(training_data, size=8), 
+							shuffle=True, batch_size=100000, drop_last=True)
+	for i, (data, target) in enumerate(train_loader):
+		mag, susc, energy, heatc = ising_methods_new.ising_observables(data, 8, temperature)
+
+	with open(args.input_path + "training_data_observables.txt", "a") as file:
+		file.write("{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\n".format(temperature, 
+					mag[0], mag[1], susc[0], susc[1], energy[0], energy[1], heatc[0], heatc[1]))
+
 	with open(training_data) as file:
 		temperature = float(file.readline())
 
