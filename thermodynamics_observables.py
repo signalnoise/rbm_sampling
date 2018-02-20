@@ -64,7 +64,7 @@ for i in range(1, 31, 1):
 
 	training_data = "/exports/csce/eddie/ph/groups/rbm_ml/owen-data/training_data/state" + str(i) + ".txt"
 
-	with open() as file:
+	with open(training_data) as file:
 		temperature = float(file.readline())
 
 	saved_state = input_dir + "/trained_rbm.pytorch.1000"
