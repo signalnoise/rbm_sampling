@@ -68,7 +68,7 @@ for i in range(1, 31, 1):
 	with open(training_data) as file:
 		temperature = float(file.readline())
 
-	train_loader = DataLoader(rbm_interface.CSV_Ising_dataset(training_data, size=8), 
+	train_loader = DataLoader(rbm_interface.CSV_Ising_dataset(training_data, size=64), 
 							shuffle=True, batch_size=100000, drop_last=True)
 	for i, (data, target) in enumerate(train_loader):
 		mag, susc, energy, heatc = ising_methods_new.ising_observables(data, parameters['ising']['size'], temperature)
