@@ -68,8 +68,8 @@ for i in range(1, 31, 1):
 	with open(training_data) as file:
 		temperature = float(file.readline())
 
-	train_loader = DataLoader(rbm_interface.CSV_Ising_dataset(training_data, size=64), 
-							shuffle=True, batch_size=100000, drop_last=True)
+	data, validation, comparison = rbm_interface.ising_loader(training_data, size=64).get_datsets()
+	train_loader = DataLoader(data, shuffle=True, batch_size=100000, drop_last=True)
 	for i, (data, target) in enumerate(train_loader):
 		mag, susc, energy, heatc = ising_methods_new.ising_observables(data, parameters['ising']['size'], temperature)
 
@@ -77,6 +77,6 @@ for i in range(1, 31, 1):
 		file.write("{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\n".format(temperature, 
 					mag[0], mag[1], susc[0], susc[1], energy[0], energy[1], heatc[0], heatc[1]))
 
-	saved_state = input_dir + "/trained_rbm.pytorch.1000"
+	saved_state = input_dir + "/trained_rbm.pytorch.3000"
 	filename = args.input_path + "temp_graph_machines.txt"
 	sample_and_save(temperature, saved_state, parameters, filename, dtype, image_dir)

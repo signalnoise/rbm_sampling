@@ -182,6 +182,8 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_d
 		for _ in range(parameters['autocorrelation']):
 			v, v_prob = new_state(v, rbm, dtype)
 
+		v, v_prob = new_state(v, rbm, dtype)
+
 		# Concatenate the samples
 		states = torch.cat((states,v), dim=0)
 

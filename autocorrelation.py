@@ -13,6 +13,21 @@ from torch.utils.data import DataLoader
 from ising_methods_new import *
 import json
 
+
+def autocorrelation(split_history, T):
+	s = 0
+	for k in range(len(split_history[:,0])-T):
+		product = np.multiply(split_history[k,:],split_history[k+T,:])
+		s = s + (np.mean(product) - np.power(np.mean(split_history[k,:]),2))/np.var(split_history[k,:])
+	return s
+
+def correlation_time(split_history):
+	s = 0
+	for T in range(250):
+		s = s + autocorrelation(split_history, T)
+	s = s/autocorrelation(split_history, 0)
+	return s
+
 font = {'family' : 'normal',
         'weight' : 'light',
         'size'   : 10}
@@ -55,45 +70,13 @@ energy_history = ising_energy(spin_states, L).cpu().numpy()
 
 split_mag = np.reshape(mag_history, (-1,parameters['concurrent_states']))
 split_energy = np.reshape(energy_history, (-1,parameters['concurrent_states']))
-'''
-mag_samples = bootstrap_sample(mag_history, N_bootstrap, dtype)
-energy_samples = bootstrap_sample(energy_history, N_bootstrap, dtype)
-'''
-#mag = torch.mean(mag_history)/N_spins
-susc = np.var(split_mag, axis=1)/(N_spins * temperature)
-print(susc.shape)
-#energy = torch.mean(energy_history)/N_spins
-heatc = np.var(split_energy, axis=1)/(N_spins * temperature**2)
-print(heatc.shape)
 
-plt.ylabel('Frequency')
-plt.axvline(0.776831, ls='--', color=palette[1])
-#print("sigma: {:f}".format(np.std(mag.numpy())))
-plt.hist(mag_history/N_spins, 15)
-plt.xlabel('Magnetisation')
-plt.tight_layout()
-plt.show()
-#print("sigma: {:f}".format(np.std(energy.numpy())))
-plt.ylabel('Frequency')
-plt.hist(energy_history/N_spins, 15)
-plt.axvline(-1.485561, ls='--', color=palette[1])
-plt.xlabel('Energy')
-plt.tight_layout()
+mag_correlation = []
+energy_correlation = []
+for i in range(250):
+	mag_correlation.append(autocorrelation(split_mag,i))
+
+print(correlation_time(split_mag))
+plt.plot(range(250), mag_correlation)
 plt.show()
 
-
-#print("sigma: {:f}".format(np.std(heatc.numpy())))
-plt.ylabel('Frequency')
-plt.hist(heatc, 20)
-plt.axvline(1.14904, ls='--', color=palette[1])
-plt.xlabel('Heat Capacity')
-plt.tight_layout()
-plt.show()
-
-#print("sigma: {:f}".format(np.std(susc.numpy())))
-plt.ylabel('Frequency')
-plt.hist(susc, 20)
-plt.xlabel('Susceptibility')
-plt.axvline(1.20866, ls='--', color=palette[1])
-plt.tight_layout()
-plt.show()
