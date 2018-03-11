@@ -31,8 +31,17 @@ sns.set_context('paper')
 parse = argparse.ArgumentParser(description='Process some integers.')
 parse.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
 					type=str)
+parse.add_argument('--cuda', dest='cuda', type=bool, default=False)
 
 args = parse.parse_args()
+
+# Enable cuda
+if args.cuda:
+	dtype = torch.cuda.FloatTensor
+else:
+	dtype = torch.FloatTensor
+
+
 
 L = 8
 
