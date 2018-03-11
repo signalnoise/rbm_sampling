@@ -1,5 +1,6 @@
 import sys
 sys.path.append('../Refactor/')
+sys.path.append('../rbm-pytorch-refactor')
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
