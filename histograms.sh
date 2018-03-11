@@ -9,4 +9,4 @@
 
 module load igmm/apps/anaconda/5.0.0.1
 source activate owen-pytorch
-python3 plotter.py --json thermodynamics-params.json
+python3 plotter.py --json thermodynamics-params.json --cuda True
