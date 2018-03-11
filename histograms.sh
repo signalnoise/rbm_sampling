@@ -1,6 +1,6 @@
 #! /bin/sh
 #$ -cwd
-#$ -N thermodynamics
+#$ -N hists
 #$ -l h_rt=04:00:00
 #$ -pe gpu 1
 #$ -l h_vmem=16G
