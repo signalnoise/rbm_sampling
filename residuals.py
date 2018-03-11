@@ -17,15 +17,15 @@ sns.set(style='ticks', palette='Set2')
 palette = sns.color_palette()
 sns.set_style('white')
 sns.set_style('ticks', {"axes.linewidth": ".5", "xtick.minor.size" : ".5", "ytick.minor.size" : ".5","xtick.major.size" : "-5", "ytick.major.size" : "-5"})
-sns.set_context("paper")
+
 """
 font =  {'weight' : 'light',
         'size'   : 10}
 matplotlib.rc('font', **font)
 """
+sns.set_context("paper")
 
-
-path = "data/adadelta/1000epochs/"
+path = "data/sgd/1000epochs/"
 
 names = ['Temperature', 'Magnetisation', 'merr', 'Susceptibility', 'cherr', 'Energy', 'eerr', 'Heat Capacity', 'herr']
 df = pd.read_csv(path + "temp_graph_machines.txt", sep="\t", names=names)
@@ -43,8 +43,10 @@ axes = axes.ravel()
 for i in range(4):
 	quant = 2*i + 1
 	axes[i] = plt.subplot(gs1[i])
-	axes[i].errorbar(df.Temperature, df[names[quant]], yerr=df[names[quant + 1]], fmt='o', ms='6', alpha=0.8)
-	axes[i].plot(df2.Temperature, df2[names[quant]], '--')
+	axes[i].errorbar(df.Temperature, df[names[quant]]-df2[names[quant]], yerr=df[names[quant + 1]], fmt='o', ms='6', alpha=0.8)
+	axes[i].axhline(0, ls='--', color=palette[0])
+	axes[i].fill_between(df.Temperature,-df[names[quant + 1]], df[names[quant + 1]], color=palette[1], alpha=0.4)
+	axes[i].fill_between(df.Temperature,-2*df[names[quant + 1]], 2*df[names[quant + 1]], color=palette[1], alpha=0.3)
 	axes[i].linewidth=0.5
 	#axes[i].grid(linewidth=0.5)
 	axes[i].set_xticklabels([])

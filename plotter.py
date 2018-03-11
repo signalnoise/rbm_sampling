@@ -4,6 +4,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.mlab as mlab
 import torch
 import argparse
 import rbm_interface
@@ -12,6 +13,7 @@ import ising_methods_new
 from torch.utils.data import DataLoader
 from ising_methods_new import *
 import json
+from scipy.stats import norm
 
 font = {'family' : 'normal',
         'weight' : 'light',
@@ -21,6 +23,9 @@ matplotlib.rc('font', **font)
 
 sns.set(style='ticks', palette='Set2')
 palette = sns.color_palette()
+sns.set_style('white')
+sns.set_style('ticks',{"axes.linewidth": ".5", "xtick.minor.size" : ".5", "ytick.minor.size" : ".5","xtick.major.size" : "3", "ytick.major.size" : "3"})
+sns.set_context('paper')
 
 parse = argparse.ArgumentParser(description='Process some integers.')
 parse.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
@@ -66,34 +71,39 @@ print(susc.shape)
 heatc = np.var(split_energy, axis=1)/(N_spins * temperature**2)
 print(heatc.shape)
 
-plt.ylabel('Frequency')
-plt.axvline(0.776831, ls='--', color=palette[1])
-#print("sigma: {:f}".format(np.std(mag.numpy())))
-plt.hist(mag_history/N_spins, 15)
-plt.xlabel('Magnetisation')
-plt.tight_layout()
-plt.show()
-#print("sigma: {:f}".format(np.std(energy.numpy())))
-plt.ylabel('Frequency')
-plt.hist(energy_history/N_spins, 15)
-plt.axvline(-1.485561, ls='--', color=palette[1])
-plt.xlabel('Energy')
-plt.tight_layout()
-plt.show()
-
+labels = ['Magneto Value']
 
 #print("sigma: {:f}".format(np.std(heatc.numpy())))
 plt.ylabel('Frequency')
+plt.axvline(1.14904, ls='--', color='k', linewidth=0.7)
+sns.distplot(heatc, fit=norm, kde=False, fit_kws={"color": palette[2]})
+"""
+mu = np.mean(heatc)
+sigma = np.sqrt(np.var(heatc))
+x = np.linspace(np.amin(heatc), np.amax(heatc), 100)
 plt.hist(heatc, 20)
+
 plt.axvline(1.14904, ls='--', color=palette[1])
+plt.plot(x, mlab.normpdf(x , mu, sigma))
+"""
+plt.legend(labels)
 plt.xlabel('Heat Capacity')
+sns.despine()
 plt.tight_layout()
 plt.show()
 
 #print("sigma: {:f}".format(np.std(susc.numpy())))
 plt.ylabel('Frequency')
+plt.axvline(1.20866, ls='--', color='k', linewidth=0.7)
+sns.distplot(susc, fit=norm, kde=False,  fit_kws={"color": palette[2]})
+"""
+mu = np.mean(susc)
+sigma = np.sqrt(np.var(susc))
 plt.hist(susc, 20)
 plt.xlabel('Susceptibility')
-plt.axvline(1.20866, ls='--', color=palette[1])
+"""
+plt.legend(labels)
+plt.xlabel('Susceptibility')
+sns.despine()
 plt.tight_layout()
 plt.show()

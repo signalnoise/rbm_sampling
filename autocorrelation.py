@@ -12,6 +12,7 @@ import ising_methods_new
 from torch.utils.data import DataLoader
 from ising_methods_new import *
 import json
+from pandas.plotting import autocorrelation_plot
 
 
 def autocorrelation(split_history, T):
@@ -36,6 +37,9 @@ matplotlib.rc('font', **font)
 
 sns.set(style='ticks', palette='Set2')
 palette = sns.color_palette()
+sns.set_style('white', {"axes.linewidth": ".5", "xtick.minor.size" : ".5", "ytick.minor.size" : ".5","xtick.major.size" : "-5", "ytick.major.size" : "-5"})
+sns.set_context("paper")
+
 
 parse = argparse.ArgumentParser(description='Process some integers.')
 parse.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
@@ -71,6 +75,35 @@ energy_history = ising_energy(spin_states, L).cpu().numpy()
 split_mag = np.reshape(mag_history, (-1,parameters['concurrent_states']))
 split_energy = np.reshape(energy_history, (-1,parameters['concurrent_states']))
 
+split_susc = np.var(split_mag, axis=1)/(N_spins * temperature)
+split_heatc = np.var(split_energy,axis=1)/(N_spins * temperature**2)
+
+split_mag = np.mean(split_mag, axis=1)
+split_mag = pd.Series(split_mag)
+autocorrelation_plot(split_mag)
+plt.grid(b=False)
+plt.gca().set_ylim([-0.3,1.0])
+plt.show()
+
+split_energy = np.mean(split_energy, axis=1)
+split_energy = pd.Series(split_energy)
+autocorrelation_plot(split_energy)
+plt.grid(b=False)
+plt.gca().set_ylim([-0.3,1.0])
+plt.show()
+
+autocorrelation_plot(split_susc)
+plt.grid(b=False)
+plt.gca().set_ylim([-0.3,1.0])
+plt.show()
+
+autocorrelation_plot(split_heatc)
+plt.grid(b=False)
+plt.gca().set_ylim([-0.3,1.0])
+plt.show()
+
+
+"""
 mag_correlation = []
 energy_correlation = []
 for i in range(250):
@@ -80,3 +113,4 @@ print(correlation_time(split_mag))
 plt.plot(range(250), mag_correlation)
 plt.show()
 
+"""
