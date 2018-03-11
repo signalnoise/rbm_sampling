@@ -34,7 +34,7 @@ parse.add_argument('--json', dest='input_json', default='params.json', help='JSO
 args = parse.parse_args()
 
 L = 8
-N_bootstrap = 10000
+
 N_spins = 64
 temperature = 2.27
 
@@ -90,7 +90,7 @@ plt.legend(labels)
 plt.xlabel('Heat Capacity')
 sns.despine()
 plt.tight_layout()
-plt.show()
+plt.savefig("heatc.png")
 
 #print("sigma: {:f}".format(np.std(susc.numpy())))
 plt.ylabel('Frequency')
@@ -106,4 +106,4 @@ plt.legend(labels)
 plt.xlabel('Susceptibility')
 sns.despine()
 plt.tight_layout()
-plt.show()
+plt.savefig("susc.png")

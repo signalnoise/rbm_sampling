@@ -1,5 +1,5 @@
 {
-    "saved_state": "./trained_rbm.pytorch.last",
+    "saved_state": "./trained_rbm.pytorch.3000",
     "steps": 499,
     "concurrent_states": 64,
     "temperature": 2.27,
