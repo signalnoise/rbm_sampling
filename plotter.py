@@ -1,11 +1,13 @@
 import sys
 sys.path.append('../Refactor/')
 sys.path.append('../rbm-pytorch-refactor')
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
-import matplotlib
-import matplotlib.mlab as mlab
 import torch
 import argparse
 import rbm_interface
@@ -101,6 +103,8 @@ plt.xlabel('Heat Capacity')
 sns.despine()
 plt.tight_layout()
 plt.savefig("heatc.png")
+
+plt.clf()
 
 #print("sigma: {:f}".format(np.std(susc.numpy())))
 plt.ylabel('Frequency')
