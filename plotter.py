@@ -83,7 +83,7 @@ print(susc.shape)
 heatc = np.var(split_energy, axis=1)/(N_spins * temperature**2)
 print(heatc.shape)
 
-labels = ['Magneto Value']
+labels = ['Magneto Value', 'Gaussian Fit']
 
 #print("sigma: {:f}".format(np.std(heatc.numpy())))
 plt.ylabel('Frequency')
