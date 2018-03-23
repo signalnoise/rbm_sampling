@@ -1,0 +1,16 @@
+{
+  "model": "ising",
+  "checkpoint": "../rbm_train/T_2.27_epoch_5000_batch_10_hidden_8_ising_8_k_1/text/trained_rbm.pytorch.5000",
+  "image_dir": "./rawdata/",
+  "hidden_layers": 8,
+  "steps": 20000,
+  "thermalization": 5000,
+  "save interval": 1,
+  "concurrent samples": 1,
+  "initialize_with_training": false,
+  "output_states": false,
+  "ising": {
+    "train_data": "/scratch/data/rbm/magneto/2.27/state0.txt",
+    "size": 8
+  }
+}

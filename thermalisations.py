@@ -8,6 +8,7 @@ import torch
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 font = {'family' : 'normal',
         'weight' : 'light',
@@ -35,15 +36,12 @@ except:
 
 rbm = rbm_pytorch.RBM(n_vis=parameters['ising']['size']**2, n_hid=parameters['n_hid'])
 
-rbm.load_state_dict(torch.load(parameters['saved_state']))
+rbm.load_state_dict(torch.load(parameters['saved_state'], map_location=lambda storage, loc: storage))
+x = np.array([[0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,1,0,1,1,1,1,0,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,1,0,1,1,1,0,1,1,0,0,1,1,0,0,0,0,1,0,1,1,1,0,0,1,1]])
+vin = torch.from_numpy(x)
 
-for i in range(5):
+for i in range(6,7,1):
 	parameters['thermalisation'] = 10**i
-	states = ising_methods_new.sample_from_rbm(rbm, parameters)
-	dtype = states.type()
-	spin_states = ising_methods_new.convert_to_spins(states)
-	energy_history = ising_methods_new.ising_energy(spin_states, parameters['ising']['size']).cpu().numpy()
-	plt.hist(energy_history, 40)
-	plt.show()
+	states = ising_methods_new.sample_from_rbm(rbm, parameters, v_in=vin, save_images=True)
 
 

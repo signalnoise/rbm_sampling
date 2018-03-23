@@ -139,7 +139,7 @@ def bootstrap_sample(nd_array, N_bootstrap, dtype):
 	return output
 
 
-def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_dir="./images", save_images=False):
+def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, save_images=False):
 	""" Draws samples from an rbm.
 	Args:
 		rbm: a trained instance of rbm_pytorch.rbm
@@ -157,10 +157,12 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_d
 
 	# Initialise the gibbs chain with zeros or some input
 	if v_in is not None:
-		v = v_in
+		v = v_in.type(dtype)
+		for i in range(parameters['concurrent_states']-1):
+			v = torch.cat((v,v_in.type(dtype)), dim=0)
 	else:
-		v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
-		#v = F.relu(torch.sign(torch.rand(parameters['concurrent_states'], rbm.v_bias.data.shape[0])-0.5)).data
+		#v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
+		v = F.relu(torch.sign(torch.rand(parameters['concurrent_states'], rbm.v_bias.data.shape[0])-0.5)).data
 
 	# Run the gibbs chain for a certain number of steps to allow it to converge to the
 	# stationary distribution.
@@ -176,7 +178,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, image_d
 
 		if (s % parameters['save interval'] == 0) and (save_images):
 
-			save_images(image_dir, s, v, v_prob, parameters['ising']['size'])
+			save_imgs(parameters['image_dir'], s, v, v_prob, parameters['ising']['size'])
 
 		# Run the gibbs chain for a given number of steps to reduce correlation between samples
 		for _ in range(parameters['autocorrelation']):
@@ -243,7 +245,7 @@ def new_state(v, rbm, dtype):
 	v, v_prob = visible_from_hidden(h, rbm.W.data.type(dtype), rbm.v_bias.data.type(dtype), dtype)
 	return v, v_prob	
 
-def save_images(directory, step, v, v_prob, L, output_states=True):
+def save_imgs(directory, step, v, v_prob, L, output_states=True):
 	""" Saves images of the generated states.
 	Args:
 		directory: Directory in which to save the images.
