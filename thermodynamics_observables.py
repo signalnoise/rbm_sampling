@@ -79,4 +79,4 @@ for i in range(1, 31, 1):
 
 	saved_state = input_dir + "/trained_rbm.pytorch.3000"
 	filename = args.input_path + "temp_graph_machines.txt"
-	sample_and_save(temperature, saved_state, parameters, filename, dtype, image_dir)
+	sample_and_save(temperature, saved_state, parameters, filename, dtype)
