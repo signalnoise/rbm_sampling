@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 import json
 import torch
 
-def sample_and_save(temperature, saved_state, parameters, filename, dtype, image_dir):
+def sample_and_save(temperature, saved_state, parameters, filename, dtype):
 	""" Appends the four observables for a given trained rbm to a file.
 	Args:
 		n_vis: number of visible nodes
@@ -22,7 +22,7 @@ def sample_and_save(temperature, saved_state, parameters, filename, dtype, image
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=parameters['n_hid'])
 	rbm.load_state_dict(torch.load(saved_state))
 
-	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype, image_dir=image_dir)
+	states = ising_methods_new.sample_from_rbm(rbm, parameters, dtype)
 	
 	mag, susc, energy, heatc = ising_methods_new.ising_observables(states, L, temperature)
 
