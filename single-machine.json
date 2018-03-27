@@ -1,7 +1,7 @@
 {
-    "saved_state": "trained_rbm.crit.sgd.3000.pyt",
+    "saved_state": "../Refactor/lr-examples/explode/trained_rbm.pytorch.200",
     "steps": 499,
-    "concurrent_states": 64,
+    "concurrent_states": 10,
     "temperature": 2.27,
     "initialize_with_training": false,
     "save interval": 10,

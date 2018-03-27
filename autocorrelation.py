@@ -132,7 +132,7 @@ split_energy = np.mean(split_energy, axis=1)
 
 names = ["Magnetisation", "Energy", "Susceptibility", "Heat Capacity"]
 
-with open("autocorrelation_data_" + str(parameters['thermalisation']) + ".txt", "w") as file:
+with open("autocorrelationw_data_" + str(parameters['thermalisation']) + ".txt", "w") as file:
 	file.write("\t".join(names) + "\n")
 	for i in range(len(split_mag)):
 		text = "{:f}\t{:f}\t{:f}\t{:f}\n".format(split_mag[i], split_energy[i], split_susc[i], split_heatc[i])

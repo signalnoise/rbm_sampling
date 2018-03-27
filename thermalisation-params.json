@@ -7,7 +7,7 @@
     "save interval": 1,
     "output_states": true,
     "thermalisation": 100000,
-    "autocorrelation": 200,
+    "autocorrelation": 60,
     "image_dir": "./therm-images/",
     "n_hid": 64,
     "epochs": 1000,
