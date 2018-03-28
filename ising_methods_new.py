@@ -40,11 +40,11 @@ def ising_energy(spin_state, L):
 	# Cuda compatibility
 	dtype = spin_state.type()
 
-	# shape[0] is the number of concurrent states, shape[1] number of visible nodes
-	e = torch.zeros(spin_state.shape[0]).type(dtype)
+	# shape[0] is the number of concurrent states, shape[1] the number of steps,shape[2] number of visible nodes
+	e = torch.zeros(spin_state.shape[0],spin_state.shape[1]).type(dtype)
 	
-	for i in range(spin_state.shape[1]):
-		e = torch.add(e,-torch.mul(spin_state[:,i],(torch.add(spin_state[:,right(i,L)],spin_state[:,below(i,L)]))))
+	for i in range(spin_state.shape[2]):
+		e = torch.add(e,-torch.mul(spin_state[:,:,i],(torch.add(spin_state[:,:,right(i,L)],spin_state[:,:,below(i,L)]))))
 	return e
 
 def convert_to_spins(state):
@@ -67,7 +67,7 @@ def magnetisation(spin_state):
 		Torch tensor containing the magnetisations of the states
 	"""
 	
-	return torch.mean(spin_state, dim=1).abs_()*spin_state.shape[1]
+	return torch.mean(spin_state, dim=2).abs_()*spin_state.shape[2]
 
 def ising_observables(states, L, temperature):
 	"""Computes observables given a full dataset for a certain temperature.
@@ -88,48 +88,50 @@ def ising_observables(states, L, temperature):
 	mag_history = magnetisation(spin_states).cpu().numpy()
 	energy_history = ising_energy(spin_states, L).cpu().numpy()
 
-
-	N_spins = spin_states.shape[1]
+	N_spins = spin_states.shape[2]
 	avg_magnetisation = average_magnetisation(mag_history, N_spins)
 	avg_energy = average_energy(energy_history, N_spins)
 	susc = susceptibility(mag_history, N_spins, temperature)
 	heatc = heat_capacity(energy_history, N_spins, temperature)
 
-	mag_err, susc_err, energy_err, heatc_err = ising_errors(mag_history, energy_history, N_spins, temperature, 3000, dtype)
+	mag_err, susc_err, energy_err, heatc_err = ising_errors(avg_magnetisation, avg_energy, susc, heatc, 3000, dtype)
 	
-	mag_t = avg_magnetisation, mag_err
-	susc_t = susc, susc_err
-	energy_t = avg_energy, energy_err
-	heatc_t = heatc, heatc_err
+	mag_t = avg_magnetisation.mean(), mag_err
+	susc_t = susc.mean(), susc_err
+	energy_t = avg_energy.mean(), energy_err
+	heatc_t = heatc.mean(), heatc_err
 
 	return mag_t, susc_t, energy_t, heatc_t
 
 def average_magnetisation(mag_history, N_spins):
-	return np.mean(mag_history, dtype=np.float64)/N_spins
+	return np.mean(mag_history, axis=1, dtype=np.float64)/N_spins
 
 def average_energy(energy_history, N_spins):
-	return  np.mean(energy_history, dtype=np.float64)/N_spins
+	return  np.mean(energy_history, axis=1, dtype=np.float64)/N_spins
 
 def susceptibility(mag_history, N_spins, temperature):
-	return np.var(mag_history, dtype=np.float64) / (N_spins * temperature)
+	return np.var(mag_history, axis=1, dtype=np.float64) / (N_spins * temperature)
 
 def heat_capacity(energy_history, N_spins, temperature):
-	return np.var(energy_history, dtype=np.float64) / (N_spins * temperature**2)
+	return np.var(energy_history, axis=1, dtype=np.float64) / (N_spins * temperature**2)
 
-def ising_errors(mag_history, energy_history, N_spins, temperature, N_bootstrap, dtype):
+def ising_errors(mag_history, energy_history, susc_history, heatc_history, N_bootstrap, dtype):
 	
 	mag_samples = bootstrap_sample(mag_history, N_bootstrap, dtype)
 	energy_samples = bootstrap_sample(energy_history, N_bootstrap, dtype)
+	susc_samples = bootstrap_sample(susc_history, N_bootstrap, dtype)
+	heatc_samples = bootstrap_sample(heatc_history, N_bootstrap, dtype)
 
-	mag = torch.mean(mag_samples, dim=1)/N_spins
-	susc = torch.var(mag_samples, dim=1)/(N_spins * temperature)
-	energy = torch.mean(energy_samples, dim=1)/N_spins
-	heatc = torch.var(energy_samples, dim=1)/(N_spins * temperature**2)
 
-	mag_err = np.sqrt(torch.var(mag))
-	susc_err = np.sqrt(torch.var(susc))
-	energy_err = np.sqrt(torch.var(energy))
-	heatc_err = np.sqrt(torch.var(heatc))
+	mag = torch.mean(mag_samples, dim=1)
+	susc = torch.mean(susc_samples, dim=1)
+	energy = torch.mean(energy_samples, dim=1)
+	heatc = torch.mean(heatc_samples, dim=1)
+
+	mag_err = np.std(mag.numpy())
+	susc_err = np.std(susc.numpy())
+	energy_err = np.std(energy.numpy())
+	heatc_err = np.std(heatc.numpy())
 
 	return mag_err, susc_err, energy_err, heatc_err
 
@@ -153,7 +155,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, save_im
 	n_vis = parameters['ising']['size']**2
 
 	# Create a zeroed tensor 
-	states = torch.zeros(parameters['concurrent_states'],n_vis).type(dtype)
+	states = torch.zeros(parameters['concurrent_states'],1,n_vis).type(dtype)
 
 	# Initialise the gibbs chain with zeros or some input
 	if v_in is not None:
@@ -162,7 +164,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, save_im
 			v = torch.cat((v,v_in.type(dtype)), dim=0)
 	else:
 		#v = torch.zeros(parameters['concurrent_states'], rbm.v_bias.data.shape[0]).type(dtype)
-		v = F.relu(torch.sign(torch.rand(parameters['concurrent_states'], rbm.v_bias.data.shape[0])-0.5)).data.type(dtype)
+		v = F.relu(torch.sign(torch.rand(parameters['concurrent_states'], 1, n_vis)-0.5)).data.type(dtype)
 
 	# Run the gibbs chain for a certain number of steps to allow it to converge to the
 	# stationary distribution.
@@ -170,7 +172,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, save_im
 
 		v, v_prob = new_state(v, rbm, dtype)
 
-	# Fill the empty tensor with the fil sample from the machine
+	# Fill the empty tensor with the first sample from the machine
 	states.add_(v)
 
 	# Draw a number of samples equal to the number steps
@@ -187,7 +189,7 @@ def sample_from_rbm(rbm, parameters, dtype=torch.FloatTensor, v_in=None, save_im
 		v, v_prob = new_state(v, rbm, dtype)
 
 		# Concatenate the samples
-		states = torch.cat((states,v), dim=0)
+		states = torch.cat((states,v), dim=1)
 
 	return states	
 

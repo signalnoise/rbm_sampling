@@ -26,7 +26,7 @@ matplotlib.rc('font', **font)
 """
 sns.set_context("paper")
 
-path = "adagrad/"
+path = "data/s-s/adagrad/"
 
 names = ['Temperature', 'Magnetisation', 'merr', 'Susceptibility', 'cherr', 'Energy', 'eerr', 'Heat Capacity', 'herr']
 df = pd.read_csv(path + "temp_graph_machines.txt", sep="\t", names=names)
