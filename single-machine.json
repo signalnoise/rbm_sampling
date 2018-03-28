@@ -1,5 +1,5 @@
 {
-    "saved_state": "data/sgd/well-trained/trained_rbm.pytorch.3000",
+    "saved_state": "../Refactor/lr-examples/explode/trained_rbm.pytorch.200",
     "steps": 19,
     "concurrent_states":64,
     "temperature": 2.27,
