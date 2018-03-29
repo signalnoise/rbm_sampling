@@ -74,5 +74,5 @@ for epoch in range(0, 3000, 10):
 
 	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000)
 
-	with open(args.input_path + "NLL-timeline.txt", "a") as file:
+	with open(args.input_path + "NLL-timesline.txt", "a") as file:
 		file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
