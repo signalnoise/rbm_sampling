@@ -62,7 +62,7 @@ with open(training_data) as file:
 	temperature = float(file.readline())
 
 data, validation, comparison = rbm_interface.ising_loader(training_data, size=64).get_datasets()
-train_loader = DataLoader(data, shuffle=True, batch_size=100000, drop_last=True)
+train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
 
 # Loop over epochs and append data to files
 for epoch in range(0, 3000, 10):
