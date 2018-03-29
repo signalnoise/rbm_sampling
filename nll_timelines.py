@@ -36,10 +36,10 @@ parse = argparse.ArgumentParser(description='Process some integers.')
 parse.add_argument('--json', dest='input_json', default='params.json', help='JSON file describing the sample parameters',
 					type=str)
 parse.add_argument('--input_path', dest='input_path', help='Path to trained rbms')
-parse.add_argument('--n_hid', dest='n_hid', help='Path to output data')
+parse.add_argument('--n_hid', dest='n_hid', type=int, help='Path to output data')
 parse.add_argument('--training_data', dest='training_data', help='Path to training data')
 parse.add_argument('--state_number', dest='state_number', help='Which state are we using')
-parse.add_argument('-L', dest='lattice_size', help='Ising lattice size')
+parse.add_argument('-L', dest='lattice_size', type=int, help='Ising lattice size')
 parse.add_argument('--cuda', dest='cuda', type=bool)
 
 args = parse.parse_args()
