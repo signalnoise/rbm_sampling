@@ -64,7 +64,7 @@ with open(training_data) as file:
 print("Sample temperature " + str(temperature))
 
 data, validation, comparison = rbm_interface.ising_loader(training_data, size=L**2).get_datasets()
-train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
+train_loader = DataLoader(data, shuffle=True, batch_size=100000, drop_last=True)
 file = open(input_dir + "NLL_timeline.data", 'w')
 # Loop over epochs and append data to files
 for epoch in range(0, 3001, 10):
