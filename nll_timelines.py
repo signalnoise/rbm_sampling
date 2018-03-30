@@ -61,7 +61,7 @@ training_data = "/exports/csce/eddie/ph/groups/rbm_ml/owen-data/training_data/st
 with open(training_data) as file:
 	temperature = float(file.readline())
 
-print("Sample temperature" + str(temperature))
+print("Sample temperature " + str(temperature))
 
 data, validation, comparison = rbm_interface.ising_loader(training_data, size=L**2).get_datasets()
 train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
@@ -76,5 +76,7 @@ for epoch in range(0, 3000, 10):
 
 	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000, dtype=dtype)
 	print(nll)
-	with open(args.input_path + "NLL-timesline.txt", 'a') as file:
-		file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
+	
+	file = open(args.input_path + "NLL-timesline.txt", 'w')
+	file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
+file.close()
