@@ -67,7 +67,7 @@ data, validation, comparison = rbm_interface.ising_loader(training_data, size=L*
 train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
 
 # Loop over epochs and append data to files
-for epoch in range(0, 3000, 10):
+for epoch in range(0, 3001, 10):
 	
 	saved_state = input_dir + "/trained_rbm.pytorch." + str(epoch).zfill(4)
 
