@@ -65,7 +65,7 @@ print("Sample temperature " + str(temperature))
 
 data, validation, comparison = rbm_interface.ising_loader(training_data, size=L**2).get_datasets()
 train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
-
+file = open(input_dir + "NLL_timeline.data", 'w')
 # Loop over epochs and append data to files
 for epoch in range(0, 3001, 10):
 	
@@ -75,6 +75,6 @@ for epoch in range(0, 3001, 10):
 	rbm.load_state_dict(torch.load(saved_state)) #map_location=lambda storage, loc: storage))
 
 	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000, dtype=dtype)	
-	file = open(input_dir + "NLL-timesline.txt", 'w')
+	
 	file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
 file.close()
