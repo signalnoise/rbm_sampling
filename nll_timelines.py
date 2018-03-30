@@ -75,6 +75,6 @@ for epoch in range(0, 3000, 10):
 	rbm.load_state_dict(torch.load(saved_state)) #map_location=lambda storage, loc: storage))
 
 	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000, dtype=dtype)
-
-	with open(args.input_path + "NLL-timesline.txt", "a") as file:
+	print(nll)
+	with open(args.input_path + "NLL-timesline.txt", 'a') as file:
 		file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
