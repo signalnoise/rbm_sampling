@@ -74,9 +74,7 @@ for epoch in range(0, 3000, 10):
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=args.n_hid, enable_cuda=args.cuda)
 	rbm.load_state_dict(torch.load(saved_state)) #map_location=lambda storage, loc: storage))
 
-	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000, dtype=dtype)
-	print(nll)
-	
-	file = open(args.input_path + "NLL-timesline.txt", 'w')
+	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000, dtype=dtype)	
+	file = open(input_dir + "NLL-timesline.txt", 'w')
 	file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
 file.close()
