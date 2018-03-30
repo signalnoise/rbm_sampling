@@ -5,10 +5,10 @@ import rbm_pytorch
 from torch.autograd import Variable
 import torch
 
-def NLL_estimate(rbm, train_loader, n_samples):	
+def NLL_estimate(rbm, train_loader, n_samples, dtype=torch.FloatTensor):	
 	sum_free_energy = 0
 	for i, (data, target) in enumerate(train_loader):
-		v = Variable(data.view(-1, len(rbm.v_bias.data))).type(torch.FloatTensor)
+		v = Variable(data.view(-1, len(rbm.v_bias.data))).type(dtype)
 		sum_free_energy = sum_free_energy + rbm.free_energy(v, size_average=False).sum().data[0]
 	logZ, highZ, lowZ = rbm.annealed_importance_sampling()
 	avg_f_e = sum_free_energy/n_samples

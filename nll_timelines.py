@@ -61,7 +61,9 @@ training_data = "/exports/csce/eddie/ph/groups/rbm_ml/owen-data/training_data/st
 with open(training_data) as file:
 	temperature = float(file.readline())
 
-data, validation, comparison = rbm_interface.ising_loader(training_data, size=64).get_datasets()
+print("Sample temperature" + str(temperature))
+
+data, validation, comparison = rbm_interface.ising_loader(training_data, size=L**2).get_datasets()
 train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
 
 # Loop over epochs and append data to files
@@ -70,9 +72,9 @@ for epoch in range(0, 3000, 10):
 	saved_state = input_dir + "/trained_rbm.pytorch." + str(epoch).zfill(4)
 
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=args.n_hid)
-	rbm.load_state_dict(torch.load(saved_state,map_location=lambda storage, loc: storage))
+	rbm.load_state_dict(torch.load(saved_state)) #map_location=lambda storage, loc: storage))
 
-	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000)
+	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000, dtype)
 
 	with open(args.input_path + "NLL-timesline.txt", "a") as file:
 		file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
