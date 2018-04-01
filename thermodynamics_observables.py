@@ -74,6 +74,7 @@ for i in range(1, 31, 1):
 	train_loader = DataLoader(data, shuffle=True, batch_size=100000, drop_last=True)
 	for i, (data, target) in enumerate(train_loader):
 		v = data.view(-1, L**2)
+		print(v.shape)
 		mag, susc, energy, heatc = ising_methods_new.ising_observables(v, parameters['ising']['size'], temperature)
 
 	with open(args.input_path + "training_data_observables.txt", "a") as file:
