@@ -35,7 +35,9 @@ spin_states = convert_to_spins(states)
 mag_history = magnetisation(spin_states).cpu().numpy()
 energy_history = ising_energy(spin_states, L).cpu().numpy()
 
+
 N_spins = spin_states.shape[2]
+mag_errs = np.std(mag_history, axis=1)/((N_spins)*np.sqrt(spin_states.shape[1]))
 avg_magnetisation = average_magnetisation(mag_history, N_spins)
 avg_energy = average_energy(energy_history, N_spins)
 susc = susceptibility(mag_history, N_spins, temperature)
@@ -48,14 +50,12 @@ heatc = heat_capacity(energy_history, N_spins, temperature)
 (m,merr), (ch, cherr), (e, eerr), (hc, hcerr) = ising_observables(states, 8, 2.27)
 
 x = [x for x in range(64)]
-plt.errorbar(x=x, fmt='o', y=susc)
-print(np.std(susc))
-plt.axhline(ch+cherr, color='k', ls='--')
-plt.fill_between(x,ch-(cherr/np.sqrt(64)), ch+(cherr/np.sqrt(64)), alpha=0.4)
-plt.axhline(ch, color='k')
-plt.axhline(ch-cherr, color='k', ls='--')
-
-plt.title('Susceptibility')
-plt.xlabel('Machines')
-plt.ylabel('$\chi$')
+plt.errorbar(x=x, fmt='o', y=avg_magnetisation, yerr= mag_errs)
+plt.axhline(m+merr, color='k', ls='--', linewidth=0.7)
+plt.axhline(m, color='k', linewidth=0.7)
+plt.axhline(m-merr, color='k', ls='--', linewidth=0.7)
+plt.fill_between(x, m+mag_errs, m-mag_errs, alpha=0.3, color='r')
+plt.fill_between(x, m+2*mag_errs, m-2*mag_errs, alpha=0.2, color='r')
+plt.xlabel('Gibbs Chain')
+plt.ylabel('$\overline{m}$')
 plt.show()
