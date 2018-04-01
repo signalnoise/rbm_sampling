@@ -40,6 +40,8 @@ parse.add_argument('--cuda', dest='cuda', type=bool)
 
 args = parse.parse_args()
 
+L = 8
+
 # Enable cuda
 if args.cuda:
 	dtype = torch.cuda.FloatTensor
@@ -71,7 +73,8 @@ for i in range(1, 31, 1):
 	data, validation, comparison = rbm_interface.ising_loader(training_data, size=64).get_datasets()
 	train_loader = DataLoader(data, shuffle=True, batch_size=100000, drop_last=True)
 	for i, (data, target) in enumerate(train_loader):
-		mag, susc, energy, heatc = ising_methods_new.ising_observables(data, parameters['ising']['size'], temperature)
+		v = data.view(-1, L**2)
+		mag, susc, energy, heatc = ising_methods_new.ising_observables(v, parameters['ising']['size'], temperature)
 
 	with open(args.input_path + "training_data_observables.txt", "a") as file:
 		file.write("{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\t{:f}\n".format(temperature, 
