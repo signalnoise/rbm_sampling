@@ -73,7 +73,7 @@ for i in range(1, 31, 1):
 	data, validation, comparison = rbm_interface.ising_loader(training_data, size=64).get_datasets()
 	train_loader = DataLoader(data, shuffle=True, batch_size=100000, drop_last=True)
 	for i, (data, target) in enumerate(train_loader):
-		v = data.view(-1, L**2)
+		v = data.view(1, -1, L**2)
 		print(v.shape)
 		mag, susc, energy, heatc = ising_methods_new.ising_observables(v, parameters['ising']['size'], temperature)
 
