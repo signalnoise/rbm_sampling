@@ -66,8 +66,8 @@ def magnetisation(spin_state):
 	Returns:
 		Torch tensor containing the magnetisations of the states
 	"""
-	
-	return torch.mean(spin_state, dim=2).abs_()*spin_state.shape[2]
+	print(spin_state.shape[2])
+	return torch.mean(spin_state, dim=2).abs_()*spin_state.numpy().shape[2]
 
 def ising_observables(states, L, temperature):
 	"""Computes observables given a full dataset for a certain temperature.

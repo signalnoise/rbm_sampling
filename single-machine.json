@@ -1,5 +1,5 @@
 {
-    "saved_state": "trained_rbm.crit.sgd.3000.pyt",
+    "saved_state": "trained_rbms_scratch/minima-machines/adadelta/state1.3000",
     "steps": 149,
     "concurrent_states":64,
     "temperature": 2.27,
