@@ -116,11 +116,8 @@ def heat_capacity(energy_history, N_spins, temperature):
 
 def ising_errors(mag_history, energy_history, susc_history, heatc_history, N_bootstrap, N_spins, temperature, dtype):
 	
-	mag_samples = bootstrap_sample(mag_history, N_bootstrap, dtype)
-	energy_samples = bootstrap_sample(energy_history, N_bootstrap, dtype)
-	susc_samples = bootstrap_sample(susc_history.reshape(-1), N_bootstrap, dtype)
-	heatc_samples = bootstrap_sample(heatc_history.reshape(-1), N_bootstrap, dtype)
-
+	mag_samples = bootstrap_sample(mag_history.reshape(-1), N_bootstrap, dtype)
+	energy_samples = bootstrap_sample(energy_history.reshape(-1), N_bootstrap, dtype)
 	
 	mag = torch.mean(mag_samples, dim=1)/(N_spins)
 	susc = torch.var(mag_samples, dim=1)/(N_spins*temperature)
