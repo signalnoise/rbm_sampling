@@ -127,10 +127,10 @@ def ising_errors(mag_history, energy_history, susc_history, heatc_history, N_boo
 	energy = torch.mean(energy_samples, dim=1)
 	heatc = torch.mean(heatc_samples, dim=1)
 
-	mag_err = np.std(mag.numpy())
-	susc_err = np.std(susc.numpy())
-	energy_err = np.std(energy.numpy())
-	heatc_err = np.std(heatc.numpy())
+	mag_err = np.std(mag.cpu().numpy())
+	susc_err = np.std(susc.cpu().numpy())
+	energy_err = np.std(energy.cpu().numpy())
+	heatc_err = np.std(heatc.cpu().numpy())
 
 	return mag_err, susc_err, energy_err, heatc_err
 
