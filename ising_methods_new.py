@@ -109,10 +109,10 @@ def average_energy(energy_history, N_spins):
 	return  np.mean(energy_history, axis=1, dtype=np.float64)/N_spins
 
 def susceptibility(mag_history, N_spins, temperature):
-	return np.var(mag_history, axis=1, dtype=np.float64) / (N_spins * temperature)
+	return np.var(mag_history, axis=0, dtype=np.float64) / (N_spins * temperature)
 
 def heat_capacity(energy_history, N_spins, temperature):
-	return np.var(energy_history, axis=1, dtype=np.float64) / (N_spins * temperature**2)
+	return np.var(energy_history, axis=0, dtype=np.float64) / (N_spins * temperature**2)
 
 def ising_errors(mag_history, energy_history, susc_history, heatc_history, N_bootstrap, dtype):
 	
@@ -123,9 +123,9 @@ def ising_errors(mag_history, energy_history, susc_history, heatc_history, N_boo
 
 
 	mag = torch.mean(mag_samples, dim=1)
-	susc = torch.mean(susc_samples, dim=1)
+	susc = torch.mean(susc_samples, dim=0)
 	energy = torch.mean(energy_samples, dim=1)
-	heatc = torch.mean(heatc_samples, dim=1)
+	heatc = torch.mean(heatc_samples, dim=0)
 
 	mag_err = np.std(mag.cpu().numpy())
 	susc_err = np.std(susc.cpu().numpy())

@@ -1,7 +1,7 @@
 {
-    "saved_state": "trained_rbms_scratch/minima-machines/adadelta/state1.3000",
+    "saved_state": "trained_rbms_scratch/adadelta/trained_rbm.pytorch.3000",
     "steps": 149,
-    "concurrent_states":64,
+    "concurrent_states":1,
     "temperature": 2.27,
     "initialize_with_training": false,
     "save interval": 10,

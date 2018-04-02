@@ -85,11 +85,11 @@ print(susc.shape)
 heatc = np.var(split_energy, axis=1)/(N_spins * temperature**2)
 print(heatc.shape)
 
-with open("data/therm/with-autocorr/heatcapacity_" + str(parameters['thermalisation']) + ".txt", 'w') as file:
+with open("data/therm/with-autocorr/adadheatcapacity_" + str(parameters['thermalisation']) + ".txt", 'w') as file:
 	x = [str(item) for item in heatc]
 	file.write("\n".join(x))
 
-with open("data/therm/with-autocorr/susceptibility_" + str(parameters['thermalisation']) + ".txt",'w') as file:
+with open("data/therm/with-autocorr/adadsusceptibility_" + str(parameters['thermalisation']) + ".txt",'w') as file:
 	y = [str(item) for item in susc]
 	file.write("\n".join(y))
 
