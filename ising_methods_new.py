@@ -93,7 +93,7 @@ def ising_observables(states, L, temperature):
 	susc = susceptibility(mag_history, N_spins, temperature)
 	heatc = heat_capacity(energy_history, N_spins, temperature)
 
-	mag_err, susc_err, energy_err, heatc_err = ising_errors(avg_magnetisation, avg_energy, susc, heatc, 3000, dtype)
+	mag_err, susc_err, energy_err, heatc_err = ising_errors(mag_history, energy_history, susc, heatc, 3000, N_spins, temperature, dtype)
 	
 	mag_t = avg_magnetisation.mean(), mag_err
 	susc_t = susc.mean(), susc_err
@@ -109,24 +109,29 @@ def average_energy(energy_history, N_spins):
 	return  np.mean(energy_history, axis=1, dtype=np.float64)/N_spins
 
 def susceptibility(mag_history, N_spins, temperature):
-	return np.var(mag_history, axis=0, dtype=np.float64) / (N_spins * temperature)
+	return np.var(mag_history.reshape(-1), dtype=np.float64) / (N_spins * temperature)
 
 def heat_capacity(energy_history, N_spins, temperature):
-	return np.var(energy_history, axis=0, dtype=np.float64) / (N_spins * temperature**2)
+	return np.var(energy_history.reshape(-1), dtype=np.float64) / (N_spins * temperature**2)
 
-def ising_errors(mag_history, energy_history, susc_history, heatc_history, N_bootstrap, dtype):
+def ising_errors(mag_history, energy_history, susc_history, heatc_history, N_bootstrap, N_spins, temperature, dtype):
 	
 	mag_samples = bootstrap_sample(mag_history, N_bootstrap, dtype)
 	energy_samples = bootstrap_sample(energy_history, N_bootstrap, dtype)
-	susc_samples = bootstrap_sample(susc_history, N_bootstrap, dtype)
-	heatc_samples = bootstrap_sample(heatc_history, N_bootstrap, dtype)
+	susc_samples = bootstrap_sample(susc_history.reshape(-1), N_bootstrap, dtype)
+	heatc_samples = bootstrap_sample(heatc_history.reshape(-1), N_bootstrap, dtype)
 
-
-	mag = torch.mean(mag_samples, dim=1)
-	susc = torch.mean(susc_samples, dim=0)
-	energy = torch.mean(energy_samples, dim=1)
-	heatc = torch.mean(heatc_samples, dim=0)
-
+	
+	mag = torch.mean(mag_samples, dim=1)/(N_spins)
+	susc = torch.var(mag_samples, dim=1)/(N_spins*temperature)
+	energy = torch.mean(energy_samples, dim=1)/N_spins
+	heatc = torch.var(energy_samples, dim=1)/(N_spins*temperature**2)
+	'''
+	mag = torch.mean(mag_samples, dim=1)/(N_spins)
+	susc = torch.mean(susc_samples, dim=1)
+	energy = torch.mean(energy_samples, dim=1)/N_spins
+	heatc = torch.mean(heatc_samples, dim=1)
+	'''
 	mag_err = np.std(mag.cpu().numpy())
 	susc_err = np.std(susc.cpu().numpy())
 	energy_err = np.std(energy.cpu().numpy())

@@ -78,13 +78,21 @@ energy_samples = bootstrap_sample(energy_history, N_bootstrap, dtype)
 '''
 #mag = torch.mean(mag_history)/N_spins
 
+with open('data/therm/magnetisation_' + str(parameters['thermalisation']) + '.txt') as file:
+	x = [str(item) for item in split_mag]
+	file.write('\n'.join(x))
 
+
+'''
 susc = np.var(split_mag, axis=1)/(N_spins * temperature)
 print(susc.shape)
 #energy = torch.mean(energy_history)/N_spins
 heatc = np.var(split_energy, axis=1)/(N_spins * temperature**2)
 print(heatc.shape)
+'''
 
+
+'''
 with open("data/therm/with-autocorr/adadheatcapacity_" + str(parameters['thermalisation']) + ".txt", 'w') as file:
 	x = [str(item) for item in heatc]
 	file.write("\n".join(x))
@@ -92,7 +100,7 @@ with open("data/therm/with-autocorr/adadheatcapacity_" + str(parameters['thermal
 with open("data/therm/with-autocorr/adadsusceptibility_" + str(parameters['thermalisation']) + ".txt",'w') as file:
 	y = [str(item) for item in susc]
 	file.write("\n".join(y))
-
+'''
 
 """
 labels = ['Magneto Value', 'Gaussian Fit']
