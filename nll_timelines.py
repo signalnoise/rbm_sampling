@@ -56,7 +56,7 @@ else:
 
 input_dir = args.input_path + "/8-" + str(state_number) + "/" 
 
-training_data = "/exports/csce/eddie/ph/groups/rbm_ml/owen-data/training_data/state" + str(state_number) + ".txt"
+training_data = args.training_data + "/state" + str(state_number) + ".txt"
 
 with open(training_data) as file:
 	temperature = float(file.readline())
