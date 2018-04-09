@@ -61,11 +61,10 @@ training_data = args.training_data + "/state" + str(state_number) + ".txt"
 with open(training_data) as file:
 	temperature = float(file.readline())
 
-print("Sample temperature " + str(temperature))
-
 data, validation, comparison = rbm_interface.ising_loader(training_data, size=L**2).get_datasets()
 train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
 file = open(input_dir + "NLL_timeline.data", 'w')
+file.write("# Sample temperature " + str(temperature))
 # Loop over epochs and append data to files
 for epoch in range(0, 3001, 10):
 	
