@@ -61,7 +61,7 @@ input_dir = args.input_path + "/8-" + str(state_number) + "/"
 data, validation, comparison = rbm_interface.ising_loader(training_data, size=L**2).get_datasets()
 train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
 file = open(input_dir + "weight_timeline.data", 'w')
-file.write("# Sample temperature " + str(temperature))
+#file.write("# Sample temperature " + str(temperature))
 # Loop over epochs and append data to files
 for epoch in range(0, 3001, 10):
 	
@@ -70,6 +70,6 @@ for epoch in range(0, 3001, 10):
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=args.n_hid, enable_cuda=args.cuda)
 	rbm.load_state_dict(torch.load(saved_state)) #map_location=lambda storage, loc: storage))
 	avg_weight = torch.mean(rbm.W.data)
-	file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, avg_weight))
+	file.write("{:d}\t{:f}\n".format(epoch, avg_weight))
 	print(str(epoch))
 file.close()
