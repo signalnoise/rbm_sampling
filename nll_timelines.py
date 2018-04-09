@@ -76,4 +76,5 @@ for epoch in range(0, 3001, 10):
 	nll, ubound, lbound = NLL_estimate(rbm, train_loader, 100000, dtype=dtype)	
 	
 	file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, nll, ubound, lbound))
+	print(str(epoch))
 file.close()
