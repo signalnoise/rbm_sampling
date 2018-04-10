@@ -73,8 +73,8 @@ for epoch in range(0, 3001, 10):
 	rbm.load_state_dict(torch.load(saved_state)) #map_location=lambda storage, loc: storage))
 
 	imgshow(input_dir + "/weights/" + str(epoch).zfill(5), make_grid(rbm.W.view(64, 1, L, L).data))
-	imgshow(input_dir + "/biases/" + str(epoch).zfill(5), make_grid(rbm.v_bias.view(64, 1, L, L).data))
-	imgshow(input_dir + "/ciases/" + str(epoch).zfill(5), make_grid(rbm.h_bias.view(64, 1, L, L).data))
+	imgshow(input_dir + "/biases/" + str(epoch).zfill(5), make_grid(rbm.v_bias.view(-1, 1, L, L).data))
+	imgshow(input_dir + "/ciases/" + str(epoch).zfill(5), make_grid(rbm.h_bias.view(-1, 1, L, L).data))
 	#file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, avg_weight, avg_bias, avg_cias))
 	print(str(epoch))
 file.close()
