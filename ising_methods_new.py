@@ -268,7 +268,7 @@ def save_imgs(directory, step, v, v_prob, L, output_states=True):
 def imgshow(file_name, img):
 	""" Saves images.
 	"""
-	npimg = np.transpose(img.numpy(), (1, 2, 0))
+	npimg = np.transpose(img.cpu().numpy(), (1, 2, 0))
 	f = "./%s.png" % file_name
 	Wmin = img.min
 	Wmax = img.max
