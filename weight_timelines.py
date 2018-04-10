@@ -9,6 +9,8 @@ from torch.utils.data import DataLoader
 import json
 import torch
 from log_likelihood import NLL_estimate
+from ising_methods_new import imgshow
+from torchvision.utils import make_grid
 
 def sample_and_save(temperature, saved_state, parameters, filename, dtype):
 	""" Appends the four observables for a given trained rbm to a file.
@@ -60,7 +62,7 @@ input_dir = args.input_path + "/8-" + str(state_number) + "/"
 
 #data, validation, comparison = rbm_interface.ising_loader(training_data, size=L**2).get_datasets()
 #train_loader = DataLoader(data, shuffle=True, batch_size=1000, drop_last=True)
-file = open(input_dir + "weight_timeline.data", 'w')
+#file = open(input_dir + "weight_timeline.data", 'w')
 #file.write("# Sample temperature " + str(temperature))
 # Loop over epochs and append data to files
 for epoch in range(0, 3001, 10):
@@ -69,9 +71,10 @@ for epoch in range(0, 3001, 10):
 
 	rbm = rbm_pytorch.RBM(n_vis=L**2, n_hid=args.n_hid, enable_cuda=args.cuda)
 	rbm.load_state_dict(torch.load(saved_state)) #map_location=lambda storage, loc: storage))
-	avg_weight = torch.mean(rbm.W.data)
-	avg_bias = torch.mean(rbm.v_bias.data)
-	avg_cias = torch.mean(rbm.h_bias.data)
-	file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, avg_weight, avg_bias, avg_cias))
+
+	imgshow(input_dir + "/images/weights/" + str(epoch).zfill(5), make_grid(rbm.W.view(64, 1, L, L).data))
+	imgshow(input_dir + "/images/biases/" + str(epoch).zfill(5), make_grid(rbm.v_bias.view(64, 1, L, L).data))
+	imgshow(input_dir + "/images/ciases/" + str(epoch).zfill(5), make_grid(rbm.h_bias.view(64, 1, L, L).data))
+	#file.write("{:d}\t{:f}\t{:f}\t{:f}\n".format(epoch, avg_weight, avg_bias, avg_cias))
 	print(str(epoch))
 file.close()
