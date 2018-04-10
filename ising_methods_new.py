@@ -269,7 +269,7 @@ def imgshow(file_name, img):
 	""" Saves images.
 	"""
 	npimg = np.transpose(img.cpu().numpy(), (1, 2, 0))
-	f = "./%s.png" % file_name
+	f = "%s.png" % file_name
 	Wmin = img.min
 	Wmax = img.max
 	plt.imsave(f, npimg, vmin=Wmin, vmax=Wmax)
